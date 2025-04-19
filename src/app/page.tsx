@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
+import { useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { Camera } from "@/components/camera";
 import { extractContactDetails } from "@/ai/flows/extract-contact-details";
@@ -19,15 +19,12 @@ export default function Home() {
   const [organization, setOrganization] = useState("");
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
-  const [website, setWebsite] = useState("");
+    const [website, setWebsite] = useState("");
   const [loading, setLoading] = useState(false);
   const cameraRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
-  const [isIPhone, setIsIPhone] = useState(false);
-
-  useEffect(() => {
-    setIsIPhone(useIsMobile() && navigator.userAgent.includes("iPhone"));
-  }, []);
+  const isMobile = useIsMobile();
+  const isIPhone = isMobile && navigator.userAgent.includes("iPhone");
 
   const captureFromFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -104,7 +101,7 @@ export default function Home() {
     <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4">
       <h1 className="text-2xl font-semibold mb-4">CardSnap Contacts</h1>
 
-      {!photo ? (useIsMobile() ? (
+      {!photo ? (isMobile ? (
         <div>
           <input type="file" accept="image/*" capture="environment" onChange={captureFromFileInput}/>
           {loading && <p>Loading...</p>}
@@ -139,3 +136,4 @@ export default function Home() {
     </div>
   );
 }
+
