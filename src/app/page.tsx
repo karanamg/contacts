@@ -71,7 +71,7 @@ export default function Home() {
 
   const handleSave = () => {
     let vCardBody = `BEGIN:VCARD\nVERSION:3.0\n`;
-    if (name) vCardBody += `FN:${name}\n`;
+    if (name) vCardBody += `N:${name};;;\nFN:${name}\n`;
     if (organization) vCardBody += `ORG:${organization}\n`;
     if (title) vCardBody += `TITLE:${title}\n`;
     if (phone) vCardBody += `TEL:${phone}\n`;
@@ -136,4 +136,5 @@ export default function Home() {
     </div>
   );
 }
+
 
