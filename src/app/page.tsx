@@ -118,6 +118,9 @@ export default function Home() {
             <div className="grid gap-2">
               <img src={photo} alt="Scanned Card" className="rounded-md shadow-sm"/>
             </div>
+            <Button onClick={() => toast({ title: "Photo selected as contact photo" })}>
+              Use as Contact Photo
+            </Button>
             <div className="grid gap-2">
               <Input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)}/>
               <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}/>
