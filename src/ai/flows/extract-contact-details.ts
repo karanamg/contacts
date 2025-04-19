@@ -4,7 +4,7 @@
  *
  * - extractContactDetails - A function that handles the contact detail extraction process.
  * - ExtractContactDetailsInput - The input type for the extractContactDetails function.
- * - ExtractContactDetailsOutput - The return type for the extractContactDetails function.
+ * - ExtractContactDetailsOutput - The return type for the ExtractContactDetails function.
  */
 
 import {ai} from '@/ai/ai-instance';
@@ -64,3 +64,5 @@ const extractContactDetailsFlow = ai.defineFlow<
   const {output} = await prompt(input);
   return output!;
 });
+
+    
