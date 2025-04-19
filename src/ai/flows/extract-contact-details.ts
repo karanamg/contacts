@@ -18,7 +18,7 @@ export type ExtractContactDetailsInput = z.infer<typeof ExtractContactDetailsInp
 const ExtractContactDetailsOutputSchema = z.object({
   name: z.string().describe('The name of the contact.'),
   phone: z.string().describe('The phone number of the contact.'),
-  email: z.string().email().describe('The email address of the contact.'),
+  email: z.string().describe('The email address of the contact.'),
   organization: z.string().describe('The organization of the contact, if any.'),
   title: z.string().describe('The title of the contact, if any.'),
 });
@@ -39,7 +39,7 @@ const prompt = ai.definePrompt({
     schema: z.object({
       name: z.string().describe('The name of the contact.'),
       phone: z.string().describe('The phone number of the contact.'),
-      email: z.string().email().describe('The email address of the contact.'),
+      email: z.string().describe('The email address of the contact.'),
       organization: z.string().describe('The organization of the contact, if any.'),
       title: z.string().describe('The title of the contact, if any.'),
     }),
