@@ -18,6 +18,8 @@ export default function Home() {
   const [email, setEmail] = useState("");
   const [organization, setOrganization] = useState("");
   const [title, setTitle] = useState("");
+  const [address, setAddress] = useState("");
+  const [website, setWebsite] = useState("");
   const [loading, setLoading] = useState(false);
   const cameraRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
@@ -32,6 +34,8 @@ export default function Home() {
       setEmail(result.email);
       setOrganization(result.organization);
       setTitle(result.title);
+      setAddress(result.address);
+      setWebsite(result.website);
       toast({
         title: "Details Parsed",
         description: "Contact details extracted successfully.",
@@ -57,6 +61,8 @@ export default function Home() {
     if (title) vCardBody += `TITLE:${title}\n`;
     if (phone) vCardBody += `TEL:${phone}\n`;
     if (email) vCardBody += `EMAIL:${email}\n`;
+    if (address) vCardBody += `ADR:${address}\n`;
+    if (website) vCardBody += `URL:${website}\n`;
     vCardBody += `END:VCARD`;
 
     const blob = new Blob([vCardBody], {type: "text/vcard"});
@@ -110,6 +116,18 @@ export default function Home() {
                 placeholder="Organization"
                 value={organization}
                 onChange={(e) => setOrganization(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Address"
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+              />
+              <Input
+                type="text"
+                placeholder="Website"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
               />
               <Input
                 type="tel"

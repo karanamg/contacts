@@ -21,6 +21,8 @@ const ExtractContactDetailsOutputSchema = z.object({
   email: z.string().describe('The email address of the contact.'),
   organization: z.string().describe('The organization of the contact, if any.'),
   title: z.string().describe('The title of the contact, if any.'),
+  address: z.string().describe('The address of the contact, if any.'),
+  website: z.string().describe('The website of the contact, if any.'),
 });
 export type ExtractContactDetailsOutput = z.infer<typeof ExtractContactDetailsOutputSchema>;
 
@@ -42,11 +44,13 @@ const prompt = ai.definePrompt({
       email: z.string().describe('The email address of the contact.'),
       organization: z.string().describe('The organization of the contact, if any.'),
       title: z.string().describe('The title of the contact, if any.'),
+      address: z.string().describe('The address of the contact, if any.'),
+      website: z.string().describe('The website of the contact, if any.'),
     }),
   },
   prompt: `You are an expert in extracting contact information from images of business cards.
 
-  Given the image, extract the name, phone number, email, organization, and title from the business card.
+  Given the image, extract the name, phone number, email, organization, title, address, and website from the business card.
 
   Output the data in JSON format.
 
@@ -64,5 +68,3 @@ const extractContactDetailsFlow = ai.defineFlow<
   const {output} = await prompt(input);
   return output!;
 });
-
-    
