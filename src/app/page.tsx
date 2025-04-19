@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, useState, useCallback, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRef, useState, useCallback } from "react";
 import { Camera } from "@/components/camera";
 import { extractContactDetails } from "@/ai/flows/extract-contact-details";
 import { Button } from "@/components/ui/button";
@@ -10,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
 import { CheckCircle, AlertCircle } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useSession, signIn, signOut } from "next-auth/react";
 
 export default function Home() {
   const [photo, setPhoto] = useState<string | null>(null);
@@ -24,17 +22,7 @@ export default function Home() {
   const [website, setWebsite] = useState("");
   const [loading, setLoading] = useState(false);
   const cameraRef = useRef<HTMLVideoElement>(null);
-  const router = useRouter();
   const isMobile = useIsMobile();
-  const isIPhone = isMobile && navigator.userAgent.includes("iPhone");
-  const { data: session } = useSession();
-
-  useEffect(() => {
-    console.log("Session in page.tsx:", session);
-    if (!session) {
-      router.push('/');
-    }
-  }, [session, router]);
 
   const captureFromFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
@@ -58,7 +46,7 @@ export default function Home() {
       setLastName(result.lastName);
       setPhone(result.phone);
       setEmail(result.email);
-      setCompany(result.company);
+       setCompany(result.company);
       setTitle(result.title);
       setAddress(result.address);
       setWebsite(result.website);
@@ -109,24 +97,9 @@ export default function Home() {
     });
   };
 
-  if (!session) {
-    return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-background p-4">
-        <h1 className="text-2xl font-semibold mb-4">CardSnap Contacts</h1>
-        <Button onClick={() => signIn("google")} className="bg-calm-blue text-background hover:bg-calm-blue/80">
-          Sign In with Google
-        </Button>
-      </div>
-    );
-  }
-
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4">
       <h1 className="text-2xl font-semibold mb-4">CardSnap Contacts</h1>
-      <p>Signed in as {session.user?.email}</p>
-      <Button onClick={() => signOut()} className="bg-destructive text-background hover:bg-destructive/80 mb-4">
-        Sign Out
-      </Button>
 
       {!photo ? (isMobile ? (
         <div>

@@ -17,8 +17,6 @@ export const metadata: Metadata = {
   description: 'Scan business cards and create contacts easily.',
 };
 
-import { SessionProvider } from "@/components/session-provider";
-
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -27,9 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <SessionProvider>
           {children}
-        </SessionProvider>
       </body>
     </html>
   );
