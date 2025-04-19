@@ -15,13 +15,13 @@ import { useSession, signIn, signOut } from "next-auth/react";
 export default function Home() {
   const [photo, setPhoto] = useState<string | null>(null);
   const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
-    const [website, setWebsite] = useState("");
+  const [website, setWebsite] = useState("");
   const [loading, setLoading] = useState(false);
   const cameraRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
@@ -30,6 +30,7 @@ export default function Home() {
   const { data: session } = useSession();
 
   useEffect(() => {
+    console.log("Session in page.tsx:", session);
     if (!session) {
       router.push('/');
     }
@@ -52,9 +53,9 @@ export default function Home() {
     setPhoto(photo);
     try {
       setLoading(true);
-      const result = await extractContactDetails({photoUrl: photo});
+      const result = await extractContactDetails({ photoUrl: photo });
       setFirstName(result.firstName);
-            setLastName(result.lastName);
+      setLastName(result.lastName);
       setPhone(result.phone);
       setEmail(result.email);
       setCompany(result.company);
@@ -64,7 +65,7 @@ export default function Home() {
       toast({
         title: "Details Parsed",
         description: "Contact details extracted successfully.",
-        action: <CheckCircle className="h-4 w-4 text-green-500"/>,
+        action: <CheckCircle className="h-4 w-4 text-green-500" />,
       });
     } catch (error: any) {
       console.error("Error extracting contact details:", error);
@@ -72,7 +73,7 @@ export default function Home() {
         variant: "destructive",
         title: "Parsing Error",
         description: error.message || "Failed to extract contact details.",
-        action: <AlertCircle className="h-4 w-4"/>,
+        action: <AlertCircle className="h-4 w-4" />,
       });
     } finally {
       setLoading(false);
@@ -80,33 +81,33 @@ export default function Home() {
   }, []);
 
   const handleSave = () => {
-        let vCardBody = `BEGIN:VCARD\nVERSION:3.0\n`;
-        if (firstName || lastName) vCardBody += `N:${lastName};${firstName};;;\nFN:${firstName} ${lastName}\n`;
-        if (company) vCardBody += `ORG:${company}\n`;
-        if (title) vCardBody += `TITLE:${title}\n`;
-        if (phone) vCardBody += `TEL:${phone}\n`;
-        if (email) vCardBody += `EMAIL:${email}\n`;
-        if (address) vCardBody += `ADR:${address}\n`;
-        if (website) vCardBody += `URL:${website}\n`;
-        if (photo) vCardBody += `PHOTO;ENCODING=BASE64;JPEG:${photo.replace(/^data:image\/(png|jpeg|jpg);base64,/, '')}\n`;
-        vCardBody += `END:VCARD`;
+    let vCardBody = `BEGIN:VCARD\nVERSION:3.0\n`;
+    if (firstName || lastName) vCardBody += `N:${lastName};${firstName};;;\nFN:${firstName} ${lastName}\n`;
+    if (company) vCardBody += `ORG:${company}\n`;
+    if (title) vCardBody += `TITLE:${title}\n`;
+    if (phone) vCardBody += `TEL:${phone}\n`;
+    if (email) vCardBody += `EMAIL:${email}\n`;
+    if (address) vCardBody += `ADR:${address}\n`;
+    if (website) vCardBody += `URL:${website}\n`;
+    if (photo) vCardBody += `PHOTO;ENCODING=BASE64;JPEG:${photo.replace(/^data:image\/(png|jpeg|jpg);base64,/, '')}\n`;
+    vCardBody += `END:VCARD`;
 
-        const blob = new Blob([vCardBody], {type: "text/vcard"});
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.href = url;
-        link.download = "contact.vcf";
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
+    const blob = new Blob([vCardBody], { type: "text/vcard" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "contact.vcf";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
 
-        toast({
-            title: "Contact Saved",
-            description: "vCard downloaded successfully. Import to your contacts.",
-            action: <CheckCircle className="h-4 w-4 text-green-500"/>,
-        });
-    };
+    toast({
+      title: "Contact Saved",
+      description: "vCard downloaded successfully. Import to your contacts.",
+      action: <CheckCircle className="h-4 w-4 text-green-500" />,
+    });
+  };
 
   if (!session) {
     return (
@@ -129,11 +130,11 @@ export default function Home() {
 
       {!photo ? (isMobile ? (
         <div>
-          <input type="file" accept="image/*" capture="environment" onChange={captureFromFileInput}/>
+          <input type="file" accept="image/*" capture="environment" onChange={captureFromFileInput} />
           {loading && <p>Loading...</p>}
         </div>
       ) : (
-        <Camera ref={cameraRef} onCapture={handleCapture} loading={loading}/>
+        <Camera ref={cameraRef} onCapture={handleCapture} loading={loading} />
       )) : (
         <Card className="w-full max-w-md">
           <CardHeader>
@@ -142,18 +143,18 @@ export default function Home() {
           </CardHeader>
           <CardContent className="grid gap-4">
             <div className="grid gap-2">
-              <img src={photo} alt="Scanned Card" className="rounded-md shadow-sm"/>
+              <img src={photo} alt="Scanned Card" className="rounded-md shadow-sm" />
             </div>
-            
+
             <div className="grid gap-2">
-              <Input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
-                <Input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
-              <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}/>
-              <Input type="text" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)}/>
-              <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)}/>
-              <Input type="text" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)}/>
-              <Input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)}/>
-              <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+              <Input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} />
+              <Input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} />
+              <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+              <Input type="text" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)} />
+              <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)} />
+              <Input type="text" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)} />
+              <Input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
+              <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
             </div>
             <Button onClick={handleSave} disabled={loading} className="bg-green-500 text-background hover:bg-green-700">
               Save Contact
@@ -164,6 +165,3 @@ export default function Home() {
     </div>
   );
 }
-
-
-
