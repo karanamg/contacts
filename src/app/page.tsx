@@ -1,15 +1,15 @@
 "use client";
 
-import {useRef, useState, useCallback} from "react";
-import {useRouter} from "next/navigation";
-import {Camera} from "@/components/camera";
-import {extractContactDetails} from "@/ai/flows/extract-contact-details";
-import {Button} from "@/components/ui/button";
-import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import {Input} from "@/components/ui/input";
-import {Textarea} from "@/components/ui/textarea";
-import {toast} from "@/hooks/use-toast";
-import {CheckCircle, AlertCircle} from "lucide-react";
+import { useRef, useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { Camera } from "@/components/camera";
+import { extractContactDetails } from "@/ai/flows/extract-contact-details";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { toast } from "@/hooks/use-toast";
+import { CheckCircle, AlertCircle } from "lucide-react";
+import { isMobile } from "@/lib/utils";
 
 export default function Home() {
   const [photo, setPhoto] = useState<string | null>(null);
@@ -23,6 +23,15 @@ export default function Home() {
   const [loading, setLoading] = useState(false);
   const cameraRef = useRef<HTMLVideoElement>(null);
   const router = useRouter();
+  const [isIPhone, setIsIPhone] = useState(false);
+
+  useEffect(() => {
+    setIsIPhone(isMobile() && navigator.userAgent.includes("iPhone"));
+  }, []);
+
+  const captureFromFileInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    if (event.target.files && event.target.files[0]) {
+      const file = event.target.files[0];
 
   const handleCapture = useCallback(async (photo: string) => {
     setPhoto(photo);
@@ -39,7 +48,7 @@ export default function Home() {
       toast({
         title: "Details Parsed",
         description: "Contact details extracted successfully.",
-        action: <CheckCircle className="h-4 w-4 text-green-500" />,
+        action: <CheckCircle className="h-4 w-4 text-green-500"/>,
       });
     } catch (error: any) {
       console.error("Error extracting contact details:", error);
@@ -47,13 +56,16 @@ export default function Home() {
         variant: "destructive",
         title: "Parsing Error",
         description: error.message || "Failed to extract contact details.",
-        action: <AlertCircle className="h-4 w-4" />,
+        action: <AlertCircle className="h-4 w-4"/>,
       });
     } finally {
       setLoading(false);
     }
   }, []);
 
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      if (e.target && e.target.result) {
   const handleSave = () => {
     let vCardBody = `BEGIN:VCARD\nVERSION:3.0\n`;
     if (name) vCardBody += `FN:${name}\n`;
@@ -78,76 +90,53 @@ export default function Home() {
     toast({
       title: "Contact Saved",
       description: "vCard downloaded successfully. Import to your contacts.",
-      action: <CheckCircle className="h-4 w-4 text-green-500" />,
+      action: <CheckCircle className="h-4 w-4 text-green-500"/>,
     });
   };
 
-  return (
-    <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4">
-      <h1 className="text-2xl font-semibold mb-4">CardSnap Contacts</h1>
+        handleCapture(e.target.result as string);
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+};
 
-      {!photo ? (
-        <Camera ref={cameraRef} onCapture={handleCapture} loading={loading} />
-      ) : (
-        <Card className="w-full max-w-md">
-          <CardHeader>
-            <CardTitle>Review Contact Details</CardTitle>
-            <CardDescription>Edit the details below before saving.</CardDescription>
-          </CardHeader>
-          <CardContent className="grid gap-4">
-            <div className="grid gap-2">
-              <img src={photo} alt="Scanned Card" className="rounded-md shadow-sm"/>
-            </div>
-            <div className="grid gap-2">
-              <Input
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="Organization"
-                value={organization}
-                onChange={(e) => setOrganization(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="Address"
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-              />
-              <Input
-                type="text"
-                placeholder="Website"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
-              />
-              <Input
-                type="tel"
-                placeholder="Phone"
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-              />
-              <Input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <Button onClick={handleSave} disabled={loading} className="bg-green-500 text-background hover:bg-green-700">
-              Save Contact
-            </Button>
-          </CardContent>
-        </Card>
-      )}
+return (
+<div className="flex flex-col items-center justify-start min-h-screen bg-background p-4">
+  <h1 className="text-2xl font-semibold mb-4">CardSnap Contacts</h1>
+
+  {!photo ? (isIPhone ? (
+    <div>
+      <input type="file" accept="image/*" capture="environment" onChange={captureFromFileInput}/>
+      {loading && <p>Loading...</p>}
     </div>
-  );
+  ) : (
+    <Camera ref={cameraRef} onCapture={handleCapture} loading={loading}/>
+  )) : (
+  <Card className="w-full max-w-md">
+    <CardHeader>
+      <CardTitle>Review Contact Details</CardTitle>
+      <CardDescription>Edit the details below before saving.</CardDescription>
+    </CardHeader>
+    <CardContent className="grid gap-4">
+      <div className="grid gap-2">
+        <img src={photo} alt="Scanned Card" className="rounded-md shadow-sm"/>
+      </div>
+      <div className="grid gap-2">
+        <Input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)}/>
+        <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}/>
+        <Input type="text" placeholder="Organization" value={organization} onChange={(e) => setOrganization(e.target.value)}/>
+        <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)}/>
+        <Input type="text" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)}/>
+        <Input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)}/>
+        <Input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)}/>
+      </div>
+      <Button onClick={handleSave} disabled={loading} className="bg-green-500 text-background hover:bg-green-700">
+        Save Contact
+      </Button>
+    </CardContent>
+  </Card>
+)}
+</div>
+);
 }
