@@ -16,10 +16,11 @@ const ExtractContactDetailsInputSchema = z.object({
 export type ExtractContactDetailsInput = z.infer<typeof ExtractContactDetailsInputSchema>;
 
 const ExtractContactDetailsOutputSchema = z.object({
-  name: z.string().describe('The name of the contact.'),
+  firstName: z.string().describe('The first name of the contact.'),
+  lastName: z.string().describe('The last name of the contact.'),
   phone: z.string().describe('The phone number of the contact.'),
   email: z.string().describe('The email address of the contact.'),
-  organization: z.string().describe('The organization of the contact, if any.'),
+  company: z.string().describe('The company of the contact, if any.'),
   title: z.string().describe('The title of the contact, if any.'),
   address: z.string().describe('The address of the contact, if any.'),
   website: z.string().describe('The website of the contact, if any.'),
@@ -39,10 +40,11 @@ const prompt = ai.definePrompt({
   },
   output: {
     schema: z.object({
-      name: z.string().describe('The name of the contact.'),
+      firstName: z.string().describe('The first name of the contact.'),
+      lastName: z.string().describe('The last name of the contact.'),
       phone: z.string().describe('The phone number of the contact.'),
       email: z.string().describe('The email address of the contact.'),
-      organization: z.string().describe('The organization of the contact, if any.'),
+      company: z.string().describe('The company of the contact, if any.'),
       title: z.string().describe('The title of the contact, if any.'),
       address: z.string().describe('The address of the contact, if any.'),
       website: z.string().describe('The website of the contact, if any.'),
@@ -50,7 +52,7 @@ const prompt = ai.definePrompt({
   },
   prompt: `You are an expert in extracting contact information from images of business cards.
 
-  Given the image, extract the name, phone number, email, organization, title, address, and website from the business card.
+  Given the image, extract the first name, last name, phone number, email, company, title, address, and website from the business card.
 
   Output the data in JSON format.
 

@@ -13,10 +13,11 @@ import { useIsMobile } from "@/hooks/use-mobile";
 
 export default function Home() {
   const [photo, setPhoto] = useState<string | null>(null);
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [organization, setOrganization] = useState("");
+  const [company, setCompany] = useState("");
   const [title, setTitle] = useState("");
   const [address, setAddress] = useState("");
     const [website, setWebsite] = useState("");
@@ -44,10 +45,11 @@ export default function Home() {
     try {
       setLoading(true);
       const result = await extractContactDetails({photoUrl: photo});
-      setName(result.name);
+      setFirstName(result.firstName);
+            setLastName(result.lastName);
       setPhone(result.phone);
       setEmail(result.email);
-      setOrganization(result.organization);
+      setCompany(result.company);
       setTitle(result.title);
       setAddress(result.address);
       setWebsite(result.website);
@@ -70,32 +72,33 @@ export default function Home() {
   }, []);
 
   const handleSave = () => {
-    let vCardBody = `BEGIN:VCARD\nVERSION:3.0\n`;
-    if (name) vCardBody += `N:${name};;;\nFN:${name}\n`;
-    if (organization) vCardBody += `ORG:${organization}\n`;
-    if (title) vCardBody += `TITLE:${title}\n`;
-    if (phone) vCardBody += `TEL:${phone}\n`;
-    if (email) vCardBody += `EMAIL:${email}\n`;
-    if (address) vCardBody += `ADR:${address}\n`;
-    if (website) vCardBody += `URL:${website}\n`;
-    vCardBody += `END:VCARD`;
+        let vCardBody = `BEGIN:VCARD\nVERSION:3.0\n`;
+        if (firstName || lastName) vCardBody += `N:${lastName};${firstName};;;\nFN:${firstName} ${lastName}\n`;
+        if (company) vCardBody += `ORG:${company}\n`;
+        if (title) vCardBody += `TITLE:${title}\n`;
+        if (phone) vCardBody += `TEL:${phone}\n`;
+        if (email) vCardBody += `EMAIL:${email}\n`;
+        if (address) vCardBody += `ADR:${address}\n`;
+        if (website) vCardBody += `URL:${website}\n`;
+        if (photo) vCardBody += `PHOTO;ENCODING=BASE64;JPEG:${photo.replace(/^data:image\/(png|jpeg|jpg);base64,/, '')}\n`;
+        vCardBody += `END:VCARD`;
 
-    const blob = new Blob([vCardBody], {type: "text/vcard"});
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "contact.vcf";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
+        const blob = new Blob([vCardBody], {type: "text/vcard"});
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = "contact.vcf";
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
 
-    toast({
-      title: "Contact Saved",
-      description: "vCard downloaded successfully. Import to your contacts.",
-      action: <CheckCircle className="h-4 w-4 text-green-500"/>,
-    });
-  };
+        toast({
+            title: "Contact Saved",
+            description: "vCard downloaded successfully. Import to your contacts.",
+            action: <CheckCircle className="h-4 w-4 text-green-500"/>,
+        });
+    };
 
   return (
     <div className="flex flex-col items-center justify-start min-h-screen bg-background p-4">
@@ -118,13 +121,12 @@ export default function Home() {
             <div className="grid gap-2">
               <img src={photo} alt="Scanned Card" className="rounded-md shadow-sm"/>
             </div>
-            <Button onClick={() => toast({ title: "Photo selected as contact photo" })}>
-              Use as Contact Photo
-            </Button>
+            
             <div className="grid gap-2">
-              <Input type="text" placeholder="Name" value={name} onChange={(e) => setName(e.target.value)}/>
+              <Input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)}/>
+                <Input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)}/>
               <Input type="text" placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)}/>
-              <Input type="text" placeholder="Organization" value={organization} onChange={(e) => setOrganization(e.target.value)}/>
+              <Input type="text" placeholder="Company" value={company} onChange={(e) => setCompany(e.target.value)}/>
               <Input type="text" placeholder="Address" value={address} onChange={(e) => setAddress(e.target.value)}/>
               <Input type="text" placeholder="Website" value={website} onChange={(e) => setWebsite(e.target.value)}/>
               <Input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)}/>
@@ -139,5 +141,3 @@ export default function Home() {
     </div>
   );
 }
-
-
